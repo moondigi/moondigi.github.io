@@ -1,12 +1,8 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <title>MoonDigi</title>
 <style>
-    html,
-    body,
-    div,
-    video {
+    * {
         margin: 0;
         padding: 0;
     }
@@ -14,51 +10,58 @@
     html,
     body {
         height: 100%;
+        background: #000;
     }
 
     #dot {
         position: fixed;
-        z-index: -1;
+        z-index: 1;
         width: 100%;
         height: 100%;
-        background: url(img/dot.png);
+        background: url(img/dot.png) repeat;
     }
 
     #ph {
         position: fixed;
-        z-index: -2;
         min-width: 100%;
         min-height: 100%;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
+        visibility: hidden;
     }
 
     #vbg {
         position: fixed;
-        z-index: -3;
         min-width: 100%;
         min-height: 100%;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        background: black;
     }
 </style>
 
 <div id="dot"></div>
-<img id="ph" src="img/ph.jpg">
-<video id="vbg" src="img/vbg.m4v" loop autoplay muted></video>
+<img id="ph">
+<video id="vbg" loop muted></video>
 
 <script>
-    var ph = document.getElementById('ph');
-    var vbg = document.getElementById('vbg');
-    vbg.addEventListener('loadedmetadata', function () {
-        var t = setInterval(_ => {
-            if (this.buffered.end(0) == this.duration) {
-                clearInterval(t);
-                ph.parentNode.removeChild(ph);
-            }
-        }, 1000);
+    document.addEventListener('DOMContentLoaded', async () => {
+        const ph = document.getElementById('ph');
+        const vbg = document.getElementById('vbg');
+        try {
+            const phResponse = await fetch('img/ph.jpg');
+            const phBlob = await phResponse.blob();
+            ph.src = URL.createObjectURL(phBlob);
+            ph.style.visibility = 'visible';
+
+            const vbgResponse = await fetch('img/vbg.m4v');
+            const vbgBlob = await vbgResponse.blob();
+            vbg.src = URL.createObjectURL(vbgBlob);
+            vbg.play();
+            ph.style.display = 'none';
+        } catch (error) {
+            console.error(error);
+        }
     })
 </script>
